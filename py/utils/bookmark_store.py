@@ -25,15 +25,19 @@ class BookmarksStore(object):
     def __init__(self,
                  list_bookmarks_main_glib_loop_callback,
                  connected_to_cloud_callback,
-                 disconnected_from_cloud_callback):
+                 disconnected_from_cloud_callback,
+                 explicit_authentication_needed_external_callback):
         self._bookmarks = None
         self._list_bookmarks_main_glib_loop_callback = list_bookmarks_main_glib_loop_callback
+        self._explicit_authentication_needed_external_callback = (
+                explicit_authentication_needed_external_callback)
         self._cloudfilesynchronizerthread = cloudfilesynchronizerthread.CloudFileSynchronizerThread(
                 "bookmarks.yaml",
                 connected_to_cloud_callback,
                 disconnected_from_cloud_callback,
                 self._list_bookmarks_callback,
                 self._get_local_cache_callback,
+                self._explicit_authentication_needed_callback,
                 self._write_callback)
         self._cloudfilesynchronizerthread.start()
 
@@ -341,6 +345,10 @@ class BookmarksStore(object):
             self._invoke_external_bookmark_update_callback(is_connected=False)
         else:
             print("Bookmarks read from local cache, but local cache is not empty.")
+
+    def _explicit_authentication_needed_callback(self):
+        print('Please authenticate using web browser')
+        self._explicit_authentication_needed_external_callback()
 
     def _update_local_copy(self, encoded_yaml):
         self._bookmarks = [{'guid': 'ROOT', 'children': []}]

@@ -15,14 +15,17 @@ class Entries(object):
         self._external_update_tabs_callback = None
         self._tabcontrol = tabcontrol.TabControl(self._update_tabs_callback, None)
 
-    def subscribe(self, list_windows_callback, update_tabs_callback, list_bookmarks_callback):
+    def subscribe(self, list_windows_callback, update_tabs_callback, list_bookmarks_callback,
+                  explicit_authentication_needed_callback):
         self._external_list_windows_callback = list_windows_callback
         self._external_update_tabs_callback = update_tabs_callback
         self._external_list_bookmarks_callback = list_bookmarks_callback
+        self._external_explicit_authentication_needed_callback = explicit_authentication_needed_callback
 
         self._bookmark_store = bookmark_store.BookmarksStore(self._list_bookmarks_callback,
                                                              self._connected_to_cloud_callback,
-                                                             lambda: None)
+                                                             lambda: None,
+                                                             self._explicit_authentication_needed_callback)
 
     def _list_bookmarks_callback(self, bookmarks, is_connected):
         self._bookmarks = bookmarks
@@ -54,3 +57,7 @@ class Entries(object):
     def _update_tabs_callback(self, pid, tabs):
         self._tabs[pid] = tabs
         self._external_update_tabs_callback(pid, tabs)
+
+    def _explicit_authentication_needed_callback(self):
+        print("Entries: explicit auth. needed")
+        self._external_explicit_authentication_needed_callback()

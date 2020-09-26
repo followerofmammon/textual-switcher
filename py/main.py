@@ -43,6 +43,7 @@ class EntriesWindowController(entrieswindow.EntryWindow):
                 list_windows_callback=self._entries_view.list_windows_callback,
                 update_tabs_callback=self._entries_view.update_tabs_callback,
                 list_bookmarks_callback=self._entries_view.list_bookmarks_callback,
+                explicit_authentication_needed_callback=self._entries_view.explicit_authentication_needed_callback
         )
         self._entries_view.subscribe(keypress_callback=self._handle_keypress,
                                      focus_callback=self._focus_callback,
